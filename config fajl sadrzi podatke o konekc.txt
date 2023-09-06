@@ -1,0 +1,85 @@
+Za Sqlite je vazno da se promeni working direktorijum (umesto bin foldera) i da taj novi folder bude onaj u kome se nalazi Program.cs (vidi kako na HabitTracker projektu).
+
+config fajl sadrzi podatke o konekciji sa bazom podataka
+Moraju da se instaliraju NuGet paketi: Microsoft.Data.Sqlite i System.Configuration.ConfigurationManager
+
+https://github.com/minhhungit/ConsoleTableExt
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+kreiranje config fajla koji se naziva App.xml.config
+
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<appSettings>
+		<add key="ConnectionString" value="Data Source=coding-tracker.db" />
+	</appSettings>
+</configuration>
+
+
+preuzimanje konekcije do baze podataka:
+
+string? connectionString = ConfigurationManager.AppSettings.Get("ConnectionString")
+
+za razliku od stringa, string? moze nakon pocetne inicijalizacije da sadrzi null vrednost.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ SELECT EXISTS(SELECT 1 FROM '{Crud.Habit}' WHERE Id = {recordId}) // ovaj upit vraca true ili false na osnovu podupita koji vraca samo jednu vrednost koja odgovara datom uslovu ako ta vrednost postoji, ako ne postoji onda vraca 0.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Oduzimanje dve datetime vrednosti
+
+ DateTime start = DateTime.ParseExact(startTime, "dd-MM-yyyy HH-mm-ss", new CultureInfo("en-Us")); 
+        DateTime end = DateTime.ParseExact(endTime, "dd-MM-yyyy HH-mm-ss", new CultureInfo("en-Us"));
+
+        TimeSpan duration = end - start;
+
+Kada DateTime.TryParseExact uvek koristi zaseban string u kojem se nalazi format datuma.
+
+TimeSpan ima svojstva days, hours,minutes,seconds. Objekat timespan predstavlja razliku izmedju ova dva dautma.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The DataTable class in C# is a part of the ADO.NET framework, which provides a way to work with data from various data sources such as databases, XML files, and more. The DataTable class represents an in-memory representation of a table, similar to a database table, and allows you to manipulate and query data using C#.
+
+Here are some key features and concepts related to the DataTable class:
+
+Columns and Rows: A DataTable consists of columns and rows. Columns define the structure of the table, including data types and constraints, while rows contain the actual data.
+
+Column Definition: You can add columns to a DataTable using the Columns property. Each column has a name and a data type, among other properties. You can also set constraints on columns, such as allowing null values or enforcing unique values.
+
+Row Manipulation: Rows can be added, modified, and deleted from a DataTable. You can use the NewRow() method to create a new row with the correct structure, and then add it to the Rows collection.
+
+Data Retrieval: You can retrieve data from a DataTable using various methods. For example, you can use LINQ queries, iterate through rows using loops, or filter data using the Select() method.
+
+Data Binding: DataTable can be used as a data source for data-bound controls in UI frameworks like Windows Forms and WPF. This allows you to display and manipulate data easily in user interfaces.
+
+Data Import and Export: DataTable provides methods for reading and writing data to and from various data sources, such as databases and XML files.
+
+Relationships: You can establish relationships between different DataTable objects using DataRelation objects, enabling you to work with related data.
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Kada u upitu koristis obicna imena polja ili SELECT * onda mozes da koristis reader.HasRows da proveris da li postoje podaci u tabeli
+Ako koristis agregatne funkcije(select sum(),max,min...) onda upit vraca NULL i moras to da validiras najbolje zasebnom metodom (possible).
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Goal funkcionalnost info
+
+In the Program class, within the Main method:
+
+We call DatabaseHelper.CreateDatabaseAndTable() to create the SQLite database and the sessions table if they don't already exist.
+
+We prompt the user to enter their coding hours goal for the current week and parse the input into the goalHours variable.
+
+We calculate the lastWeekStartDate and lastWeekEndDate to determine the previous week's time range.
+
+We initialize the lastWeekTotalHours variable to accumulate the total coding hours from the previous week.
+
+We establish a connection to the SQLite database using the using statement to ensure proper disposal.
+
+We construct an SQL query selectLastWeekDataQuery that retrieves the Duration from the sessions table for sessions that occurred within the previous week.
+
+Within the nested using block, we create an SQLiteCommand to execute the SQL query, bind the @LastWeekStartDate and @LastWeekEndDate parameters with values, execute the query using ExecuteReader(), and loop through the result set to accumulate the Duration values into lastWeekTotalHours.
+
+Finally, we display the calculated total coding hours for the previous week and determine whether the user met their coding goal, providing appropriate feedback.
